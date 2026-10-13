@@ -1,0 +1,19 @@
+{
+  "name": "pestflow-premium-redesign",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "prettier --check package.json vite.config.js scripts/*.js",
+    "typecheck": "tsc --noEmit --allowJs --checkJs --target ES2022 --module ESNext --moduleResolution Bundler scripts/*.js"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "prettier": "3.6.2",
+    "typescript": "5.9.3",
+    "vite": "7.3.7"
+  }
+}

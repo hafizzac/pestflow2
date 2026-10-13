@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" viewBox="0 0 2048 1506" role="img" aria-labelledby="title desc">
+  <title id="title">PestFlow forest blend</title>
+  <desc id="desc">A soft vertical blend from black moss and tea leaf to fern green, honey mist and moon yellow.</desc>
+  <defs>
+    <linearGradient id="forest" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#26483D"/>
+      <stop offset=".48" stop-color="#26483D"/>
+      <stop offset=".66" stop-color="#557D57"/>
+      <stop offset=".8" stop-color="#A4B963"/>
+      <stop offset=".91" stop-color="#D6D998"/>
+      <stop offset="1" stop-color="#F2EDCC"/>
+    </linearGradient>
+    <linearGradient id="slatA" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#26483D"/>
+      <stop offset=".55" stop-color="#26483D"/>
+      <stop offset=".75" stop-color="#A4B963"/>
+      <stop offset="1" stop-color="#F2EDCC"/>
+    </linearGradient>
+    <linearGradient id="slatB" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#26483D"/>
+      <stop offset=".42" stop-color="#26483D"/>
+      <stop offset=".62" stop-color="#557D57"/>
+      <stop offset=".88" stop-color="#D6D998"/>
+      <stop offset="1" stop-color="#F2EDCC"/>
+    </linearGradient>
+    <filter id="grain" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="3" seed="11" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="table" tableValues="0 .16"/></feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="2048" height="1506" fill="#26483D"/>
+  <g>
+    <rect x="0" width="88" height="1506" fill="url(#slatA)"/>
+    <rect x="88" width="94" height="1506" fill="url(#slatA)"/>
+    <rect x="182" width="94" height="1506" fill="url(#slatA)"/>
+    <rect x="276" width="94" height="1506" fill="url(#slatB)"/>
+    <rect x="370" width="94" height="1506" fill="url(#slatB)"/>
+    <rect x="464" width="94" height="1506" fill="url(#slatA)"/>
+    <rect x="558" width="94" height="1506" fill="url(#slatB)"/>
+    <rect x="652" width="94" height="1506" fill="url(#slatB)"/>
+    <rect x="746" width="94" height="1506" fill="url(#slatA)"/>
+    <rect x="840" width="94" height="1506" fill="url(#slatB)"/>
+    <rect x="934" width="90" height="1506" fill="url(#slatA)"/>
+    <rect x="1024" width="90" height="1506" fill="url(#slatA)"/>
+    <rect x="1114" width="94" height="1506" fill="url(#slatB)"/>
+    <rect x="1208" width="94" height="1506" fill="url(#slatA)"/>
+    <rect x="1302" width="94" height="1506" fill="url(#slatB)"/>
+    <rect x="1396" width="94" height="1506" fill="url(#slatB)"/>
+    <rect x="1490" width="94" height="1506" fill="url(#slatA)"/>
+    <rect x="1584" width="94" height="1506" fill="url(#slatB)"/>
+    <rect x="1678" width="94" height="1506" fill="url(#slatA)"/>
+    <rect x="1772" width="94" height="1506" fill="url(#slatB)"/>
+    <rect x="1866" width="94" height="1506" fill="url(#slatA)"/>
+    <rect x="1960" width="88" height="1506" fill="url(#slatB)"/>
+  </g>
+  <rect width="2048" height="1506" filter="url(#grain)" opacity=".48" style="mix-blend-mode:overlay"/>
+</svg>
