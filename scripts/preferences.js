@@ -633,6 +633,24 @@ Object.assign(translations.ms, {
     "Keputusan operasi yang perlu anda perbaiki dahulu.",
 });
 
+Object.assign(translations.ms, {
+  "Guided onboarding": "Onboarding berpandu",
+  "Go live in five clear steps.": "Mula beroperasi dalam lima langkah jelas.",
+  "Choose setup path": "Pilih laluan setup",
+  "Starting fresh": "Bermula baharu",
+  "Moving existing data": "Memindahkan data sedia ada",
+  "Your progress is saved.": "Kemajuan anda disimpan.",
+  "PestFlow setup": "Setup PestFlow",
+  "Preview the operating record before the team starts using it.":
+    "Pratonton rekod operasi sebelum pasukan mula menggunakannya.",
+  "Your first route": "Laluan pertama anda",
+  "Build the operating foundation.": "Bina asas operasi.",
+  "Add the company, services, team and first service route in a guided sequence.":
+    "Tambah syarikat, servis, pasukan dan laluan servis pertama dalam urutan berpandu.",
+  "Start guided setup": "Mulakan setup berpandu",
+  "Talk through onboarding →": "Bincangkan onboarding →",
+});
+
 const originalText = new WeakMap();
 const reverseTranslations = new Map();
 for (const dictionary of Object.values(translations)) {

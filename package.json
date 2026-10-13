@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "prettier --check package.json vite.config.js scripts/*.js",
+    "lint": "prettier --check README.md package.json vite.config.js scripts/*.js",
     "typecheck": "tsc --noEmit --allowJs --checkJs --target ES2022 --module ESNext --moduleResolution Bundler scripts/*.js"
   },
   "devDependencies": {
