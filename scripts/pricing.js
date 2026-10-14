@@ -1,10 +1,15 @@
-const PRICING_ENDPOINT = "/data/pricing.json";
+import {
+  PRICING_ENDPOINT,
+  normalizePricingPayload,
+  resolvePlanPrice,
+} from "./pricing-data.js";
 
 const formatPrice = (amount) =>
   new Intl.NumberFormat("en-MY", {
     style: "currency",
     currency: "MYR",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
   }).format(amount);
 
 const formatLimit = (value) => {
@@ -74,13 +79,16 @@ const renderPricing = (root, tiers, billing) => {
     const cadence = card.querySelector("[data-plan-cadence]");
     const savings = card.querySelector("[data-plan-savings]");
     const limits = card.querySelector("[data-plan-limits]");
+    const resolved = resolvePlanPrice(tier, billing);
 
-    if (price) price.textContent = formatPrice(tier.price[billing]);
+    if (price) price.textContent = formatPrice(resolved.amount);
     if (cadence) cadence.textContent = yearly ? "/ year" : "/ month";
     if (savings) {
-      savings.textContent = yearly
-        ? `Save ${tier.yearly_savings_pct}% vs monthly`
-        : "Billed monthly";
+      savings.textContent = resolved.promoPercent
+        ? `${resolved.promoLabel || "Current offer"} · ${resolved.promoPercent}% off`
+        : yearly
+          ? `Save ${tier.yearly_savings_pct}% vs monthly`
+          : "Billed monthly";
     }
     if (limits) {
       const branchCount = tier.limits.max_branches;
@@ -95,16 +103,38 @@ const renderPricing = (root, tiers, billing) => {
   }
 };
 
-const pricingRoot = document.querySelector("[data-live-pricing]");
+const renderPreview = (root, tiers) => {
+  for (const tier of tiers) {
+    const card = root.querySelector(`[data-preview-plan="${tier.key}"]`);
+    if (!card) continue;
+    const resolved = resolvePlanPrice(tier, "monthly");
+    const price = card.querySelector("[data-preview-price]");
+    const limits = card.querySelector("[data-preview-limits]");
+    if (price) price.textContent = formatPrice(resolved.amount);
+    if (limits) {
+      const techs = formatLimit(tier.limits.max_technicians);
+      const branches = formatLimit(tier.limits.max_branches);
+      limits.textContent = `${techs} technicians · ${branches} ${tier.limits.max_branches === 1 ? "branch" : "branches"}`;
+    }
+  }
+};
 
-if (pricingRoot instanceof HTMLElement) {
-  /** @type {HTMLElement | null} */
-  const status = pricingRoot.querySelector("[data-pricing-status]");
-  const billingButtons = [
-    ...pricingRoot.querySelectorAll("[data-billing]"),
-  ].filter((node) => node instanceof HTMLButtonElement);
-  let tiers = [];
-  let billing = "monthly";
+const pricingRoot = document.querySelector("[data-live-pricing]");
+const previewRoot = document.querySelector("[data-pricing-preview]");
+let tiers = [];
+let billing = "monthly";
+
+const statusText = () =>
+  document.documentElement.dataset.locale === "ms"
+    ? "Harga MYR semasa dimuatkan terus daripada tetapan pelan PestFlow."
+    : "Current MYR pricing loaded live from PestFlow plan settings.";
+
+if (pricingRoot instanceof HTMLElement || previewRoot instanceof HTMLElement) {
+  const billingButtons = pricingRoot
+    ? [...pricingRoot.querySelectorAll("[data-billing]")].filter(
+        (node) => node instanceof HTMLButtonElement,
+      )
+    : [];
 
   const setBilling = (nextBilling) => {
     billing = nextBilling;
@@ -113,50 +143,61 @@ if (pricingRoot instanceof HTMLElement) {
       button.setAttribute("aria-pressed", String(active));
       button.classList.toggle("active", active);
     });
-    renderPricing(pricingRoot, tiers, billing);
+    if (pricingRoot) renderPricing(pricingRoot, tiers, billing);
   };
 
   billingButtons.forEach((button) =>
     button.addEventListener("click", () => setBilling(button.dataset.billing)),
   );
+
   addEventListener("pestflow:locale", () => {
     renderComparison(document, tiers);
-    if (status && tiers.length) {
-      status.textContent =
-        document.documentElement.dataset.locale === "ms"
-          ? `Harga MYR daripada API pihak pertama PestFlow · direkodkan ${status.dataset.capturedAt}`
-          : `MYR pricing from PestFlow’s first-party API · captured ${status.dataset.capturedAt}`;
-    }
+    document
+      .querySelectorAll("[data-pricing-status], [data-preview-status]")
+      .forEach((status) => {
+        status.textContent = statusText();
+      });
   });
 
-  fetch(PRICING_ENDPOINT)
+  fetch(PRICING_ENDPOINT, {
+    headers: { Accept: "application/json" },
+    mode: "cors",
+  })
     .then((response) => {
       if (!response.ok)
         throw new Error(`Pricing request failed: ${response.status}`);
       return response.json();
     })
-    .then((payload) => {
-      if (!Array.isArray(payload?.tiers)) {
-        throw new Error("Pricing response has an unexpected shape");
+    .then(normalizePricingPayload)
+    .then((pricing) => {
+      tiers = pricing.tiers;
+      if (tiers.length !== 3) throw new Error("Expected three current plans");
+      if (pricingRoot) {
+        renderPricing(pricingRoot, tiers, billing);
+        renderComparison(document, tiers);
+        pricingRoot.removeAttribute("aria-busy");
       }
-      tiers = payload.tiers;
-      renderPricing(pricingRoot, tiers, billing);
-      renderComparison(document, tiers);
-      if (status) {
-        status.dataset.capturedAt = payload.capturedAt;
-        status.textContent =
-          document.documentElement.dataset.locale === "ms"
-            ? `Harga MYR daripada API pihak pertama PestFlow · direkodkan ${payload.capturedAt}`
-            : `MYR pricing from PestFlow’s first-party API · captured ${payload.capturedAt}`;
+      if (previewRoot) {
+        renderPreview(previewRoot, tiers);
+        previewRoot.removeAttribute("aria-busy");
       }
-      pricingRoot.removeAttribute("aria-busy");
+      document
+        .querySelectorAll("[data-pricing-status], [data-preview-status]")
+        .forEach((status) => {
+          status.textContent = statusText();
+        });
     })
     .catch(() => {
-      if (status) {
-        status.textContent =
-          "Live pricing is temporarily unavailable. Contact sales for current plan details.";
+      document
+        .querySelectorAll("[data-pricing-status], [data-preview-status]")
+        .forEach((status) => {
+          status.textContent =
+            "Live pricing is temporarily unavailable. Contact sales for current plan details.";
+        });
+      for (const root of [pricingRoot, previewRoot]) {
+        if (!root) continue;
+        root.removeAttribute("aria-busy");
+        root.classList.add("pricing-unavailable");
       }
-      pricingRoot.removeAttribute("aria-busy");
-      pricingRoot.classList.add("pricing-unavailable");
     });
 }

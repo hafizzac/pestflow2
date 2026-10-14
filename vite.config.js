@@ -2,6 +2,7 @@ import { resolve } from "node:path";
 
 const pages = [
   "index.html",
+  "404.html",
   "product/index.html",
   "workflow/index.html",
   "compliance/index.html",

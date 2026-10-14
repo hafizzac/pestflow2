@@ -144,8 +144,7 @@ Object.assign(translations.ms, {
     "Masukkan kerja yang diluluskan ke dalam barisan operasi.",
   "Carry completed service into billing.":
     "Bawa servis yang selesai ke proses bil.",
-  "First-party early-access testimonials published by PestFlow. Outcomes are customer-reported.":
-    "Testimoni akses awal pihak pertama yang diterbitkan oleh PestFlow. Hasil adalah laporan pelanggan.",
+
   Technicians: "Juruteknik",
   "Jobs per technician / day": "Kerja setiap juruteknik / hari",
   "Estimated admin-time value": "Anggaran nilai masa pentadbiran",
@@ -312,8 +311,7 @@ Object.assign(translations.ms, {
     "Kekalkan rekod servis dan aliran MyInvois yang layak bersambung dengan invois.",
   "Uses PestFlow’s published assumptions: 22 working days, 20 minutes of admin capacity per job and RM18/hour. Gross time value, not guaranteed cash savings.":
     "Menggunakan andaian terbitan PestFlow: 22 hari bekerja, 20 minit kapasiti pentadbiran setiap kerja dan RM18 sejam. Nilai masa kasar, bukan jaminan penjimatan tunai.",
-  "Current plans begin at RM199/month and scale by technicians, staff, branches and monthly job volume.":
-    "Pelan semasa bermula pada RM199 sebulan dan berkembang mengikut juruteknik, staf, cawangan dan jumlah kerja bulanan.",
+
   "Talk to sales →": "Hubungi jualan →",
   "Prices in MYR, exclusive of SST. Full feature entitlements are shown on the pricing page.":
     "Harga dalam MYR, tidak termasuk SST. Kelayakan ciri penuh ditunjukkan pada halaman harga.",
@@ -400,8 +398,7 @@ Object.assign(translations.ms, {
   "Core business features": "Ciri perniagaan teras",
   "Live prices are loaded from PestFlow’s first-party pricing API. Prices are in MYR and exclude SST. Confirm feature entitlements before subscribing.":
     "Harga diambil daripada API harga pihak pertama PestFlow. Harga dalam MYR dan tidak termasuk SST. Sahkan kelayakan ciri sebelum melanggan.",
-  "The table below uses the same first-party plan snapshot as the prices above.":
-    "Jadual di bawah menggunakan snapshot pelan pihak pertama yang sama seperti harga di atas.",
+
   "The operating record stays connected.": "Rekod operasi kekal bersambung.",
   "All plans start with the core customer, quotation, scheduling, service-report and billing workflow. Advanced automation and governance depend on plan.":
     "Semua pelan bermula dengan aliran teras pelanggan, sebut harga, penjadualan, laporan servis dan bil. Automasi serta tadbir urus lanjutan bergantung pada pelan.",
@@ -500,8 +497,7 @@ Object.assign(translations.ms, {
   "Talk through plans, configuration and operational scope before subscribing.":
     "Bincangkan pelan, konfigurasi dan skop operasi sebelum melanggan.",
   "Talk to sales": "Hubungi jualan",
-  "MYR pricing from PestFlow’s first-party API · captured 2026-10-10":
-    "Harga MYR daripada API pihak pertama PestFlow · direkodkan 2026-10-10",
+
   "PestFlow states that customers can change plans as their operation grows.":
     "PestFlow menyatakan pelanggan boleh menukar pelan apabila operasi berkembang.",
   "PestFlow states that an unsubscribed account becomes view-only while data remains available when a plan is activated.":
