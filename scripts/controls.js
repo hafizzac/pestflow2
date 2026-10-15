@@ -1,5 +1,6 @@
 const navActions = document.querySelector(".nav-actions");
 const navLinks = document.querySelector(".nav-links");
+/** @type {HTMLElement | null} */
 const mobileMenuControls = document.querySelector("[data-mobile-menu]");
 
 const solutionItems = [
@@ -50,20 +51,87 @@ const solutionItems = [
   },
 ];
 
+const productItems = [
+  {
+    href: "/product/",
+    label: { en: "Product overview", ms: "Gambaran produk" },
+    description: {
+      en: "Platform, modules and connected records",
+      ms: "Platform, modul dan rekod yang bersambung",
+    },
+    code: "01",
+  },
+  {
+    href: "/workflow/",
+    label: { en: "Workflow", ms: "Aliran kerja" },
+    description: {
+      en: "Follow a job from enquiry to invoice",
+      ms: "Ikuti kerja daripada pertanyaan hingga invois",
+    },
+    code: "02",
+  },
+  {
+    href: "/compliance/",
+    label: { en: "Compliance", ms: "Pematuhan" },
+    description: {
+      en: "MyInvois, SST, GPS and visit evidence",
+      ms: "MyInvois, SST, GPS dan bukti lawatan",
+    },
+    code: "03",
+  },
+];
+
+const companyItems = [
+  {
+    href: "/about/",
+    label: { en: "About PestFlow", ms: "Tentang PestFlow" },
+    description: {
+      en: "Why the platform exists and who builds it",
+      ms: "Tujuan platform dan pasukan yang membinanya",
+    },
+    code: "AB",
+  },
+  {
+    href: "/contact/",
+    label: { en: "Contact sales", ms: "Hubungi jualan" },
+    description: {
+      en: "Discuss your operation, demo or migration",
+      ms: "Bincang operasi, demo atau migrasi anda",
+    },
+    code: "CT",
+  },
+  {
+    href: "/brand/",
+    label: { en: "Brand", ms: "Jenama" },
+    description: {
+      en: "PestFlow identity, design and voice",
+      ms: "Identiti, reka bentuk dan suara PestFlow",
+    },
+    code: "BR",
+  },
+];
+
 const getLocale = () =>
   document.documentElement.dataset.locale === "ms" ? "ms" : "en";
 
-const createSolutionLinks = (locale, mobile = false) =>
-  solutionItems
+const createNavigationLinks = (items, locale, className) =>
+  items
     .map(
       (item) => `
-        <a href="${item.href}" class="${mobile ? "mobile-solution-link" : "solution-menu-link"}"${location.pathname === item.href ? ' aria-current="page"' : ""}>
+        <a href="${item.href}" class="${className}"${location.pathname === item.href ? ' aria-current="page"' : ""}>
           <span class="solution-code" aria-hidden="true">${item.code}</span>
           <span><strong>${item.label[locale]}</strong><small>${item.description[locale]}</small></span>
           <i aria-hidden="true">→</i>
         </a>`,
     )
     .join("");
+
+const createSolutionLinks = (locale, mobile = false) =>
+  createNavigationLinks(
+    solutionItems,
+    locale,
+    mobile ? "mobile-solution-link" : "solution-menu-link",
+  );
 
 const createDesktopSolutions = () => {
   if (!navLinks || navLinks.querySelector("[data-solutions-menu]")) return;
@@ -86,25 +154,48 @@ const createDesktopSolutions = () => {
   navLinks.insertBefore(wrapper, workflowLink || null);
 };
 
-const createMobileSolutions = () => {
-  if (
-    !mobileMenuControls ||
-    mobileMenuControls.querySelector("[data-mobile-solutions]")
-  )
-    return;
-  const details = document.createElement("details");
-  details.className = "mobile-solutions";
-  details.dataset.mobileSolutions = "";
-  details.innerHTML = `
-    <summary><span data-solutions-label>Solutions</span><i aria-hidden="true">+</i></summary>
-    <div class="mobile-solutions-list" data-mobile-solution-links>${createSolutionLinks(getLocale(), true)}</div>
-  `;
-  const workflowLink = mobileMenuControls.querySelector('a[href="/workflow/"]');
-  mobileMenuControls.insertBefore(details, workflowLink || null);
-};
-
-createDesktopSolutions();
-createMobileSolutions();
+const createMobileNavigation = (locale) => `
+  <div class="mobile-menu-viewport">
+    <div class="mobile-menu-track" data-mobile-menu-track>
+      <div class="mobile-menu-panel mobile-menu-main" data-mobile-menu-main aria-hidden="false">
+        <div class="mobile-menu-heading">
+          <small>${locale === "ms" ? "TEROKAI PESTFLOW" : "EXPLORE PESTFLOW"}</small>
+          <strong>${locale === "ms" ? "Pilih tempat untuk bermula." : "Choose where to start."}</strong>
+        </div>
+        <button class="mobile-menu-row mobile-menu-parent" id="mobile-trigger-product" type="button" aria-expanded="false" aria-controls="mobile-panel-product" data-mobile-menu-open="product">
+          <span><strong>${locale === "ms" ? "Produk" : "Product"}</strong><small>${locale === "ms" ? "Platform, aliran kerja dan pematuhan" : "Platform, workflow and compliance"}</small></span><i aria-hidden="true">→</i>
+        </button>
+        <button class="mobile-menu-row mobile-menu-parent" id="mobile-trigger-solutions" type="button" aria-expanded="false" aria-controls="mobile-panel-solutions" data-mobile-menu-open="solutions">
+          <span><strong>${locale === "ms" ? "Solusi" : "Solutions"}</strong><small>${locale === "ms" ? "Pilih mengikut jenis operasi" : "Choose by operating model"}</small></span><i aria-hidden="true">→</i>
+        </button>
+        <a class="mobile-menu-row" href="/pricing/"><span><strong>${locale === "ms" ? "Harga" : "Pricing"}</strong><small>${locale === "ms" ? "Pelan dan harga MYR semasa" : "Plans and current MYR pricing"}</small></span></a>
+        <a class="mobile-menu-row" href="/blog/"><span><strong>Blog</strong><small>${locale === "ms" ? "Panduan untuk operator pest control" : "Guides for pest control operators"}</small></span></a>
+        <button class="mobile-menu-row mobile-menu-parent" id="mobile-trigger-company" type="button" aria-expanded="false" aria-controls="mobile-panel-company" data-mobile-menu-open="company">
+          <span><strong>${locale === "ms" ? "Syarikat" : "Company"}</strong><small>${locale === "ms" ? "Tentang, hubungi dan jenama" : "About, contact and brand"}</small></span><i aria-hidden="true">→</i>
+        </button>
+        <a class="mobile-menu-row mobile-menu-login" href="https://app.pestflow.my/"><span><strong>${locale === "ms" ? "Log masuk" : "Log in"}</strong><small>app.pestflow.my</small></span><i aria-hidden="true">↗</i></a>
+        <div data-mobile-preferences></div>
+      </div>
+      <div class="mobile-menu-submenu-stack">
+        <section class="mobile-menu-panel mobile-menu-submenu" id="mobile-panel-product" data-mobile-submenu="product" aria-labelledby="mobile-trigger-product" aria-hidden="true" hidden inert>
+          <button class="mobile-menu-back" type="button" aria-label="Back to main menu" data-mobile-menu-back><i aria-hidden="true">←</i><span>${locale === "ms" ? "Kembali" : "Back"}</span></button>
+          <div class="mobile-menu-heading"><small>PESTFLOW</small><strong>${locale === "ms" ? "Produk" : "Product"}</strong></div>
+          <div class="mobile-submenu-list" data-mobile-product-links>${createNavigationLinks(productItems, locale, "mobile-solution-link")}</div>
+        </section>
+        <section class="mobile-menu-panel mobile-menu-submenu" id="mobile-panel-solutions" data-mobile-submenu="solutions" aria-labelledby="mobile-trigger-solutions" aria-hidden="true" hidden inert>
+          <button class="mobile-menu-back" type="button" aria-label="Back to main menu" data-mobile-menu-back><i aria-hidden="true">←</i><span>${locale === "ms" ? "Kembali" : "Back"}</span></button>
+          <div class="mobile-menu-heading"><small>PESTFLOW</small><strong>${locale === "ms" ? "Solusi" : "Solutions"}</strong></div>
+          <div class="mobile-submenu-list" data-mobile-solution-links>${createSolutionLinks(locale, true)}</div>
+        </section>
+        <section class="mobile-menu-panel mobile-menu-submenu" id="mobile-panel-company" data-mobile-submenu="company" aria-labelledby="mobile-trigger-company" aria-hidden="true" hidden inert>
+          <button class="mobile-menu-back" type="button" aria-label="Back to main menu" data-mobile-menu-back><i aria-hidden="true">←</i><span>${locale === "ms" ? "Kembali" : "Back"}</span></button>
+          <div class="mobile-menu-heading"><small>PESTFLOW</small><strong>${locale === "ms" ? "Syarikat" : "Company"}</strong></div>
+          <div class="mobile-submenu-list" data-mobile-company-links>${createNavigationLinks(companyItems, locale, "mobile-solution-link")}</div>
+        </section>
+      </div>
+    </div>
+  </div>
+`;
 
 const createPreferenceControls = (compact = false) => {
   const group = document.createElement("div");
@@ -123,18 +214,22 @@ const createPreferenceControls = (compact = false) => {
   return group;
 };
 
+createDesktopSolutions();
+
+if (mobileMenuControls) {
+  mobileMenuControls.innerHTML = createMobileNavigation(getLocale());
+  mobileMenuControls.dataset.activePanel = "main";
+  const preferenceSlot = mobileMenuControls.querySelector(
+    "[data-mobile-preferences]",
+  );
+  preferenceSlot?.append(createPreferenceControls(true));
+}
+
 if (navActions && !navActions.querySelector("[data-theme-toggle]")) {
   navActions.insertBefore(
     createPreferenceControls(),
     navActions.querySelector("[data-menu-button]"),
   );
-}
-
-if (
-  mobileMenuControls &&
-  !mobileMenuControls.querySelector("[data-theme-toggle]")
-) {
-  mobileMenuControls.append(createPreferenceControls(true));
 }
 
 const currentTheme =
@@ -225,9 +320,16 @@ const updateSolutionLanguage = () => {
     node.textContent = locale === "ms" ? "Solusi" : "Solutions";
   });
   const desktopLinks = document.querySelector("[data-solutions-links]");
-  const mobileLinks = document.querySelector("[data-mobile-solution-links]");
   if (desktopLinks) desktopLinks.innerHTML = createSolutionLinks(locale);
-  if (mobileLinks) mobileLinks.innerHTML = createSolutionLinks(locale, true);
+
+  if (mobileMenuControls) {
+    mobileMenuControls.innerHTML = createMobileNavigation(locale);
+    mobileMenuControls.dataset.activePanel = "main";
+    const preferenceSlot = mobileMenuControls.querySelector(
+      "[data-mobile-preferences]",
+    );
+    preferenceSlot?.append(createPreferenceControls(true));
+  }
 };
 addEventListener("pestflow:locale", updateSolutionLanguage);
 updateSolutionLanguage();

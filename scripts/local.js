@@ -6,12 +6,119 @@ const menuButton = document.querySelector("[data-menu-button]");
 /** @type {HTMLElement | null} */
 const mobileMenu = document.querySelector("[data-mobile-menu]");
 
+const getMobileMenuMain = () =>
+  mobileMenu?.querySelector("[data-mobile-menu-main]");
+const getMobileSubmenus = () =>
+  [...(mobileMenu?.querySelectorAll("[data-mobile-submenu]") || [])].filter(
+    (node) => node instanceof HTMLElement,
+  );
+
+let cancelPendingMobilePanelHide = () => {};
+
+const setMobilePanel = (panel = "main", focus = true) => {
+  if (!mobileMenu) return;
+  cancelPendingMobilePanelHide();
+  cancelPendingMobilePanelHide = () => {};
+
+  const mobileMenuMain = getMobileMenuMain();
+  const mobileSubmenus = getMobileSubmenus();
+  const previousPanel = mobileMenu.dataset.activePanel || "main";
+  const previousSubmenu = mobileSubmenus.find(
+    (submenu) => submenu.dataset.mobileSubmenu === previousPanel,
+  );
+  const activeSubmenu = mobileSubmenus.find(
+    (submenu) => submenu.dataset.mobileSubmenu === panel,
+  );
+  const activePanel = activeSubmenu ? panel : "main";
+  const outgoingSubmenu =
+    activePanel === "main" && previousSubmenu ? previousSubmenu : null;
+
+  mobileMenu.dataset.activePanel = activePanel;
+  if (mobileMenuMain instanceof HTMLElement) {
+    mobileMenuMain.inert = activePanel !== "main";
+    mobileMenuMain.setAttribute("aria-hidden", String(activePanel !== "main"));
+  }
+
+  mobileSubmenus.forEach((mobileSubmenu) => {
+    const active = mobileSubmenu === activeSubmenu;
+    const outgoing = mobileSubmenu === outgoingSubmenu;
+    mobileSubmenu.hidden = !active && !outgoing;
+    mobileSubmenu.inert = !active;
+    mobileSubmenu.setAttribute("aria-hidden", String(!active));
+  });
+
+  if (outgoingSubmenu) {
+    const track = mobileMenu.querySelector("[data-mobile-menu-track]");
+    const concealOutgoingPanel = () => {
+      if (mobileMenu.dataset.activePanel === "main") {
+        outgoingSubmenu.hidden = true;
+      }
+    };
+
+    if (
+      !(track instanceof HTMLElement) ||
+      matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      concealOutgoingPanel();
+    } else {
+      let settled = false;
+      let fallbackTimer = 0;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        track.removeEventListener("transitionend", onTransitionEnd);
+        clearTimeout(fallbackTimer);
+        concealOutgoingPanel();
+        cancelPendingMobilePanelHide = () => {};
+      };
+      const onTransitionEnd = (event) => {
+        if (event.target !== track || event.propertyName !== "transform")
+          return;
+        finish();
+      };
+      track.addEventListener("transitionend", onTransitionEnd);
+      fallbackTimer = window.setTimeout(finish, 360);
+      cancelPendingMobilePanelHide = () => {
+        if (settled) return;
+        settled = true;
+        track.removeEventListener("transitionend", onTransitionEnd);
+        clearTimeout(fallbackTimer);
+      };
+    }
+  }
+
+  mobileMenu.querySelectorAll("[data-mobile-menu-open]").forEach((trigger) => {
+    trigger.setAttribute(
+      "aria-expanded",
+      String(trigger.getAttribute("data-mobile-menu-open") === activePanel),
+    );
+  });
+
+  if (!focus) return;
+  if (activeSubmenu) {
+    const submenuBack = activeSubmenu.querySelector("[data-mobile-menu-back]");
+    if (submenuBack instanceof HTMLElement) {
+      submenuBack.focus({ preventScroll: true });
+    }
+    return;
+  }
+  const previousTrigger = mobileMenu.querySelector(
+    `[data-mobile-menu-open="${panel}"]`,
+  );
+  if (previousTrigger instanceof HTMLElement) {
+    previousTrigger.focus({ preventScroll: true });
+  }
+};
+
 const closeMenu = () => {
   if (!mobileMenu || mobileMenu.hidden) return;
+  setMobilePanel("main", false);
   mobileMenu.hidden = true;
   menuButton?.setAttribute("aria-expanded", "false");
   menuButton?.setAttribute("aria-label", "Open navigation menu");
 };
+
+setMobilePanel("main", false);
 
 let lastScrollY = Math.max(0, scrollY);
 let headerFrameRequested = false;
@@ -43,18 +150,47 @@ addEventListener("scroll", requestHeaderSync, { passive: true });
 menuButton?.addEventListener("click", () => {
   if (!(mobileMenu instanceof HTMLElement)) return;
   const opening = mobileMenu.hidden;
-  mobileMenu.hidden = !opening;
-  menuButton.setAttribute("aria-expanded", String(opening));
-  menuButton.setAttribute(
-    "aria-label",
-    opening ? "Close navigation menu" : "Open navigation menu",
-  );
+  if (!opening) {
+    closeMenu();
+    return;
+  }
+  setMobilePanel("main", false);
+  mobileMenu.hidden = false;
+  menuButton.setAttribute("aria-expanded", "true");
+  menuButton.setAttribute("aria-label", "Close navigation menu");
 });
+
+const returnToMainMenu = () => {
+  if (!mobileMenu) return;
+  const previousPanel = mobileMenu.dataset.activePanel || "main";
+  setMobilePanel("main", false);
+  const previousTrigger = mobileMenu.querySelector(
+    `[data-mobile-menu-open="${previousPanel}"]`,
+  );
+  if (previousTrigger instanceof HTMLElement) {
+    previousTrigger.focus({ preventScroll: true });
+  }
+};
+
 mobileMenu?.addEventListener("click", (event) => {
-  if (event.target instanceof HTMLAnchorElement) closeMenu();
+  if (!(event.target instanceof Element)) return;
+  const submenuTrigger = event.target.closest("[data-mobile-menu-open]");
+  if (submenuTrigger instanceof HTMLElement) {
+    setMobilePanel(submenuTrigger.dataset.mobileMenuOpen || "main");
+    return;
+  }
+  if (event.target.closest("[data-mobile-menu-back]")) {
+    returnToMainMenu();
+    return;
+  }
+  if (event.target.closest("a")) closeMenu();
 });
 addEventListener("keydown", (event) => {
-  if (event.key !== "Escape") return;
+  if (event.key !== "Escape" || !mobileMenu || mobileMenu.hidden) return;
+  if (mobileMenu.dataset.activePanel !== "main") {
+    returnToMainMenu();
+    return;
+  }
   closeMenu();
   if (menuButton instanceof HTMLElement) menuButton.focus();
 });
