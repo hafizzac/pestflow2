@@ -15,10 +15,10 @@ const translations = {
     "Cuba percuma": "Start free trial",
   },
   ms: {
-    "Pest control software for Malaysia":
-      "Perisian pest control untuk Malaysia",
-    "Run every visit with the truth in front of you.":
-      "Urus setiap lawatan dengan maklumat sebenar di depan anda.",
+    "Pest control operations, one connected system":
+      "Operasi pest control, satu sistem bersambung",
+    "Pest control software that connects office and field.":
+      "Perisian pest control yang menghubungkan pejabat dan lapangan.",
     "PestFlow connects leads, quotations, recurring schedules, technician work, service reports and invoicing. The office sees what is happening. The crew knows what to do next.":
       "PestFlow menghubungkan lead, sebut harga, jadual berulang, kerja juruteknik, laporan servis dan invois. Pejabat nampak apa yang sedang berlaku. Kru tahu tindakan seterusnya.",
     "Start free trial": "Mula percubaan percuma",
